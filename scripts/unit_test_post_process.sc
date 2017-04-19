@@ -12,11 +12,12 @@ def main(): Unit = {
      pwd/"target"/"scala-2.11"/"scoverage-report-unit")
   mv(pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura.xml",
      pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura-unit.xml")
+  println("Moved unit test code coverage reports.")
 
   // Convert Cobertura report to CSV.
   val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
   val pipelineName = Properties.envOrElse("BRANCH_NAME", "no_pipeline_name_defined")
-  val buildId = Properties.envOrElse("BUILD_ID", "no_build_id_definied")
+  val buildId = Properties.envOrElse("BUILD_ID", "no_build_id_defined")
   val buildTimestamp = ZonedDateTime.now(ZoneId.of("UTC")).toString
 
   val coverageXml = XML.loadFile("target/scala-2.11/scoverage-report-unit/scoverage.xml")
@@ -37,4 +38,5 @@ def main(): Unit = {
   }
 
   write.over(pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura-unit.csv", csv)
+  println("Converted Scoverage report to CSV.")
 }
