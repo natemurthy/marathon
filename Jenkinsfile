@@ -137,3 +137,6 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
     ])
   }
 }
+node("ammonite-0.8.2") {
+  sh """amm -c 'println("warmed up")'"""
+}
