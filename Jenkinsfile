@@ -15,29 +15,29 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
     m = load("marathon.groovy")
     m.install_dependencies()
 
-    stage("Kill junk processes") {
-      m.kill_junk()
-    }
-    stage("Install Mesos") {
-      m.install_mesos()
-    }
-    m.stageWithCommitStatus("1. Compile") {
-      try {
-        m.compile()
-      } finally {
-        archiveArtifacts artifacts: 'target/**/scapegoat-report/scapegoat.html', allowEmptyArchive: true
-      }
-    }
-    m.stageWithCommitStatus("2. Test") {
-      try {
-        m.test()
-      } finally {
-        sh "sudo JOB_NAME=${env.JOB_NAME} BRANCH_NAME=${env.BRANCH_NAME} BUILD_ID=${env.BUILD_ID} /usr/local/bin/amm scripts/unit_test_post_process.sc"
-        archiveArtifacts(
-            artifacts: 'target/**/coverage-report/cobertura-unit.*, target/**/scoverage-report-unit/**',
-            allowEmptyArchive: true)
-      }
-    }
+//    stage("Kill junk processes") {
+//      m.kill_junk()
+//    }
+//    stage("Install Mesos") {
+//      m.install_mesos()
+//    }
+//    m.stageWithCommitStatus("1. Compile") {
+//      try {
+//        m.compile()
+//      } finally {
+//        archiveArtifacts artifacts: 'target/**/scapegoat-report/scapegoat.html', allowEmptyArchive: true
+//      }
+//    }
+//    m.stageWithCommitStatus("2. Test") {
+//      try {
+//        m.test()
+//      } finally {
+//        sh "sudo JOB_NAME=${env.JOB_NAME} BRANCH_NAME=${env.BRANCH_NAME} BUILD_ID=${env.BUILD_ID} /usr/local/bin/amm scripts/unit_test_post_process.sc"
+//        archiveArtifacts(
+//            artifacts: 'target/**/coverage-report/cobertura-unit.*, target/**/scoverage-report-unit/**',
+//            allowEmptyArchive: true)
+//      }
+//    }
 //    m.stageWithCommitStatus("3. Test Integration") {
 //      try {
 //        m.integration_test()
@@ -137,5 +137,5 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
   }
 }
 node("ammonite-0.8.2") {
-  sh """amm -c 'println("warmed up")'"""
+  stage("Upload") { sh """amm -c 'println("warmed up")'""" }
 }
