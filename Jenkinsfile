@@ -32,8 +32,7 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
       try {
         m.test()
       } finally {
-        sh """echo "build id:$BUILD_ID job:$JOB_NAME" """
-        sh "sudo BUILD_ID=${env.BUILD_ID} /usr/local/bin/amm scripts/unit_test_post_process.sc"
+        sh "sudo JOB_NAME=${env.JOB_NAME} BRANCH_NAME=${env.BRANCH_NAME} BUILD_ID=${env.BUILD_ID} /usr/local/bin/amm scripts/unit_test_post_process.sc"
         archiveArtifacts(
             artifacts: 'target/**/coverage-report/cobertura-unit.*, target/**/scoverage-report-unit/**',
             allowEmptyArchive: true)
