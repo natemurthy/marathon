@@ -13,6 +13,7 @@ def main(): Unit = {
   mv(pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura.xml",
      pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura-unit.xml")
   println("Moved unit test code coverage reports.")
+  println(scala.util.Try(sys.env("BUILD_ID")))
 
   // Convert Cobertura report to CSV.
   val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
