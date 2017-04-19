@@ -15,12 +15,12 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
     m = load("marathon.groovy")
     m.install_dependencies()
 
-//    stage("Kill junk processes") {
-//      m.kill_junk()
-//    }
-//    stage("Install Mesos") {
-//      m.install_mesos()
-//    }
+    stage("Kill junk processes") {
+      m.kill_junk()
+    }
+    stage("Install Mesos") {
+      m.install_mesos()
+    }
 //    m.stageWithCommitStatus("1. Compile") {
 //      try {
 //        m.compile()
