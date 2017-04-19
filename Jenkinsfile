@@ -21,13 +21,13 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
     stage("Install Mesos") {
       m.install_mesos()
     }
-//    m.stageWithCommitStatus("1. Compile") {
-//      try {
-//        m.compile()
-//      } finally {
-//        archiveArtifacts artifacts: 'target/**/scapegoat-report/scapegoat.html', allowEmptyArchive: true
-//      }
-//    }
+    m.stageWithCommitStatus("1. Compile") {
+      try {
+        m.compile()
+      } finally {
+        archiveArtifacts artifacts: 'target/**/scapegoat-report/scapegoat.html', allowEmptyArchive: true
+      }
+    }
 //    m.stageWithCommitStatus("2. Test") {
 //      try {
 //        m.test()
