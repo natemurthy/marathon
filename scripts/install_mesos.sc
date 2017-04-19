@@ -13,7 +13,7 @@ val maybeVersion =
 
 // Install Mesos
 def install_mesos(version: String): Unit = {
-  %%('sudo, "apt-get", "install", "-y", "--force-yes", "-no-install-recommends", s"mesos=$version")
+  %%('sudo, "apt-get", "install", "-y", "--force-yes", "--no-install-recommends", s"mesos=$version")
 }
 
 maybeVersion match {
