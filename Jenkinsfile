@@ -110,17 +110,17 @@ node('JenkinsMarathonCI-Debian8-2017-03-21') {
 //        }
 //      }
 //    }
-//  } catch (Exception err) {
-//    currentBuild.result = 'FAILURE'
-//    if (env.BRANCH_NAME.startsWith("releases/") || env.BRANCH_NAME == "master") {
-//      slackSend(
-//          message: "(;¬_¬) branch `${env.BRANCH_NAME}` failed in build `${env.BUILD_NUMBER}`. (<${env.BUILD_URL}|Open>)",
-//          color: "danger",
-//          channel: "#marathon-dev",
-//          tokenCredentialId: "f430eaac-958a-44cb-802a-6a943323a6a8")
-//    }
-//    throw err
-//  } finally {
+  } catch (Exception err) {
+    currentBuild.result = 'FAILURE'
+    if (env.BRANCH_NAME.startsWith("releases/") || env.BRANCH_NAME == "master") {
+      slackSend(
+          message: "(;¬_¬) branch `${env.BRANCH_NAME}` failed in build `${env.BUILD_NUMBER}`. (<${env.BUILD_URL}|Open>)",
+          color: "danger",
+          channel: "#marathon-dev",
+          tokenCredentialId: "f430eaac-958a-44cb-802a-6a943323a6a8")
+    }
+    throw err
+  } finally {
     if (env.BRANCH_NAME.startsWith("releases/") || env.BRANCH_NAME == "master") {
       // Last build failed but this succeeded.
       if (m.previousBuildFailed() && currentBuild.result == 'SUCCESS') {
