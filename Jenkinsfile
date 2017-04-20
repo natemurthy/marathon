@@ -142,6 +142,10 @@ node("ammonite-0.8.2") {
   stage("Upload") {
     unstash(name: "unit_test_coverage")
     sh "head target/scala-2.11/scoverage-report-unit/*.csv"
+    sh """curl -XPOST -H "Content-Type: text/csv" \
+            "postgrest.marathon.l4lb.thisdcos.directory/coverage_results" \
+            --data-binary "@target/scala-2.11/scoverage-report-unit/*.csv"
+       """
     sh """amm -c 'println("warmed up")'"""
   }
 }
