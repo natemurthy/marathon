@@ -38,6 +38,6 @@ def main(): Unit = {
     }
   }
 
-  write.over(pwd/"target"/"scala-2.11"/"coverage-report"/"cobertura-unit.csv", csv)
+  write.over(pwd/"target"/"scala-2.11"/"scoverage-report-unit"/s"unit_test_coverage_${buildTimestamp}.csv", csv)
   println("Converted Scoverage report to CSV.")
 }
