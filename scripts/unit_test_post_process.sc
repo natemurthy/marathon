@@ -2,6 +2,7 @@
 
 import ammonite.ops._
 import java.time.{ ZonedDateTime, ZoneId }
+import java.time.format.DateTimeFormatter
 import scala.util.Properties
 import scala.xml.XML
 
@@ -19,7 +20,8 @@ def main(): Unit = {
   val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
   val pipelineName = Properties.envOrElse("BRANCH_NAME", "no_pipeline_name_defined")
   val buildId = Properties.envOrElse("BUILD_ID", "no_build_id_defined")
-  val buildTimestamp = ZonedDateTime.now(ZoneId.of("UTC")).toString
+  val dateTimeFormatter = DateTimeFormatter.ofPattern("Y-MM-d_H:m:s")
+  val buildTimestamp = ZonedDateTime.now(ZoneId.of("UTC")).format(dateTimeFormatter)
 
   val coverageXml = XML.loadFile("target/scala-2.11/scoverage-report-unit/scoverage.xml")
 
