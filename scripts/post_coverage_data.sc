@@ -5,11 +5,14 @@ import scalaj.http._
 
 @main
 def main(db_endpoint: String): Unit = {
-  val coverageData =
-    read.bytes(pwd/"target"/"scala-2.11"/"scoverage-report-unit"/"unit_test_coverage_2017-04-20_16:19:0.csv")
+  val coveragePath =
+    ((ls! pwd/"target"/"scala-2.11"/"scoverage-report-unit") |? (_.ext == "csv")).head
+  val coverageData = read.bytes(coveragePath)
   Http(db_endpoint)
     .postData(coverageData)
     .header("Content-Type", "text/csv")
     .asString
     .throwError
+
+  println("Published unit test coverage data.")
 }
