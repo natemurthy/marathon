@@ -77,7 +77,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
     IO.write(file, csv.mkString("\n"))
   }
 
-  def writeCoverageReport(sourceDirs: Seq[File], coverage: Coverage, outputDir: File, log: Logger): Unit = {
+  def writeCoverageReport(sourceDirs: Seq[File], coverage: Coverage, outputDir: File, baseDir: File, log: Logger): Unit = {
     log.info(s"Generating scoverage reports")
     outputDir.mkdirs()
     val coberturaDir = outputDir / "coverage-report"
@@ -95,7 +95,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
     new ScoverageHtmlWriter(sourceDirs, reportDir, None).write(coverage)
 
     log.info(s"Writing CSV coverage report to ${reportDir / "scoverage.csv" }")
-    writeCsv(reportDir / "scoverage.csv", new File("/Users/kjeschkies/Projects/marathon"), coverage)
+    writeCsv(reportDir / "scoverage.csv", baseDir, coverage)
 
     log.info(s"Statement coverage.: ${coverage.statementCoverageFormatted}%")
     log.info(s"Branch coverage...: ${coverage.branchCoverageFormatted}%")
@@ -122,17 +122,17 @@ object TestWithCoveragePlugin extends AutoPlugin {
     }
   }
 
-  def runTestsWithCoverage(config: Configuration, target: File, sourceDirs: Seq[File], outputDir: File, log: Logger, coverageMinimum: Double, failOnMinimum: Boolean): Def.Initialize[Task[Unit]] = Def.task {
+  def runTestsWithCoverage(config: Configuration, target: File, baseDir: File, sourceDirs: Seq[File], outputDir: File, log: Logger, coverageMinimum: Double, failOnMinimum: Boolean): Def.Initialize[Task[Unit]] = Def.task {
     (test in config).andFinally {
       loadCoverage(target, log).foreach { coverage =>
-        writeCoverageReport(sourceDirs, coverage, outputDir, log)
+        writeCoverageReport(sourceDirs, coverage, outputDir, baseDir, log)
         checkCoverage(coverage, log, coverageMinimum, failOnMinimum)
       }
     }.value
   }
 
   def runTestsWithCoverage(config: Configuration): Def.Initialize[Task[Unit]] = Def.taskDyn {
-    runTestsWithCoverage(config, target.value, (sourceDirectories in Compile).value,
+    runTestsWithCoverage(config, target.value, baseDirectory.value, (sourceDirectories in Compile).value,
       (coverageDir in config).value, streams.value.log, (coverageMinimum in config).value,
       (coverageFailOnMinimum in config).value)
   }
