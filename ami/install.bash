@@ -25,6 +25,9 @@ echo "deb http://repos.mesosphere.com/debian jessie main" | tee -a /etc/apt/sour
 apt-get -y update
 
 # Install dependencies
+apt install -t jessie-backports -y openjdk-8-jdk
+update-java-alternatives -s java-1.8.0-openjdk-amd64
+
 apt-get install -y \
     git \
     php5-cli \
@@ -33,14 +36,8 @@ apt-get install -y \
     docker-engine \
     curl \
     build-essential \
-    rpm \
-    ruby \
-    ruby-dev
+    rpm
 
-apt install -t jessie-backports -y openjdk-8-jdk
-
-# Install fpm which is used for deb and rpm packaging.
-gem install fpm
 
 # Download (but don't install) Mesos and its dependencies.
 # The CI task will install Mesos later.
@@ -58,7 +55,6 @@ gpasswd -a admin docker
 # Setup system
 systemctl enable docker
 update-ca-certificates -f
-update-java-alternatives -s java-1.8.0-openjdk-amd64
 
 echo "{\"hosts\":{\"https://phabricator.mesosphere.com/api/\":{\"token\":\"$CONDUIT_TOKEN\"}}}" > /home/admin/.arcrc
 chown admin /home/admin/.arcrc
