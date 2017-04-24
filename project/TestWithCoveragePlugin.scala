@@ -47,7 +47,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
    * Writes out a CSV with coverage data for each class.
    *
    * The header of the CSV is
-   * project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,statement_rate,branches_count,branches_rate
+   * project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,branches_count,branches_invoked
    *
    *
    * @param file CSV target
@@ -55,7 +55,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
    * @param coverage Coverage for build target.
    */
   def writeCsv(file: File, baseDir: File, coverage: Coverage): Unit = {
-    val csvHeader = "project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,statement_rate,branches_count,branches_rate"
+    val csvHeader = "project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,branches_count,branches_invoked"
 
     val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
     val pipelineName = Properties.envOrElse("BRANCH_NAME", "no_pipeline_name_defined")
@@ -70,7 +70,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
 
         val classSourceFile = c.source.replaceAll(s"${baseDir.getAbsolutePath}/", "")
 
-        s"$buildDetails, ${p.name}, ${c.fullClassName}, ${classSourceFile}, ${c.statementCount}, ${c.invokedStatementCount}, ${c.statementCoverage}, ${c.branchCount}, ${c.branchCoverage}"
+        s"$buildDetails, ${p.name}, ${c.fullClassName}, ${classSourceFile}, ${c.statementCount}, ${c.invokedStatementCount}, ${c.branchCount}, ${c.invokedBranchesCount}"
       }
     }
 
