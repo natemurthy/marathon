@@ -438,26 +438,26 @@ def build_marathon() {
     stage_with_commit_status("2. Test") {
       test()
     }
-    stage_with_commit_status("3. Integration Test") {
-      integration_test()
-    }
-    stage_with_commit_status("4. Package Binaries") {
-      package_binaries()
-    }
-    stage_with_commit_status("5. Archive Artifacts") {
-      archive_artifacts()
-    }
-    stage_with_commit_status("6. Publish Binaries") {
-      publish_artifacts()
-    }
-    stage_with_commit_status("7. Unstable Tests") {
-      if (has_unstable_tests()) {
-        unstable_test()
-      } else {
-        echo "\u2714 No Unstable Tests!"
-      }
-    }
-    report_success()
+//    stage_with_commit_status("3. Integration Test") {
+//      integration_test()
+//    }
+//    stage_with_commit_status("4. Package Binaries") {
+//      package_binaries()
+//    }
+//    stage_with_commit_status("5. Archive Artifacts") {
+//      archive_artifacts()
+//    }
+//    stage_with_commit_status("6. Publish Binaries") {
+//      publish_artifacts()
+//    }
+//    stage_with_commit_status("7. Unstable Tests") {
+//      if (has_unstable_tests()) {
+//        unstable_test()
+//      } else {
+//        echo "\u2714 No Unstable Tests!"
+//      }
+//    }
+//    report_success()
   } catch (Exception err) {
     report_failure()
     throw err

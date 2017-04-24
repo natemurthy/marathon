@@ -1,6 +1,9 @@
+import java.time.{ ZonedDateTime, ZoneId }
+import java.time.format.DateTimeFormatter
 import sbt._
 import sbt.Keys._
 import sbt.plugins.JvmPlugin
+import scala.util.Properties
 import scoverage.{Coverage, IOUtils, Serializer}
 import scoverage.report.{CoberturaXmlWriter, ScoverageHtmlWriter, ScoverageXmlWriter}
 
@@ -11,7 +14,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
 
   object autoImport {
     val testWithCoverageReport: TaskKey[Unit] = taskKey[Unit]("Runs tests with coverage")
-    val coverageDir: SettingKey[File] = settingKey[File]("Directory to ouput coverage into")
+    val coverageDir: SettingKey[File] = settingKey[File]("Directory to output coverage into")
 
   }
   import autoImport._
@@ -40,6 +43,40 @@ object TestWithCoveragePlugin extends AutoPlugin {
     }
   }
 
+  /**
+   * Writes out a CSV with coverage data for each class.
+   *
+   * The header of the CSV is
+   * project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,statement_rate,branches_count,branches_rate
+   *
+   *
+   * @param file CSV target
+   * @param baseDir Bas directory of project
+   * @param coverage Coverage for build target.
+   */
+  def writeCsv(file: File, baseDir: File, coverage: Coverage): Unit = {
+    val csvHeader = "project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,statement_rate,branches_count,branches_rate"
+
+    val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
+    val pipelineName = Properties.envOrElse("BRANCH_NAME", "no_pipeline_name_defined")
+    val buildId = Properties.envOrElse("BUILD_ID", "no_build_id_defined")
+    val dateTimeFormatter = DateTimeFormatter.ofPattern("Y-MM-d_H:m:s")
+    val buildTimestamp = ZonedDateTime.now(ZoneId.of("UTC")).format(dateTimeFormatter)
+
+    val buildDetails = s"$projectName, $pipelineName, $buildId, $buildTimestamp"
+    val csv: Seq[String] = csvHeader +: coverage.packages.view.flatMap { p =>
+
+      p.classes.map { c =>
+
+        val classSourceFile = c.source.replaceAll(s"${baseDir.getAbsolutePath}/", "")
+
+        s"$buildDetails, ${p.name}, ${c.fullClassName}, ${classSourceFile}, ${c.statementCount}, ${c.invokedStatementCount}, ${c.statementCoverage}, ${c.branchCount}, ${c.branchCoverage}"
+      }
+    }
+
+    IO.write(file, csv.mkString("\n"))
+  }
+
   def writeCoverageReport(sourceDirs: Seq[File], coverage: Coverage, outputDir: File, log: Logger): Unit = {
     log.info(s"Generating scoverage reports")
     outputDir.mkdirs()
@@ -50,10 +87,16 @@ object TestWithCoveragePlugin extends AutoPlugin {
 
     log.info(s"Writing Cobertura report to ${coberturaDir / "cobertura.xml"}")
     new CoberturaXmlWriter(sourceDirs, coberturaDir).write(coverage)
+
     log.info(s"Writing XML coverage report ${reportDir / "scoverage.xml" }")
     new ScoverageXmlWriter(sourceDirs, reportDir, false).write(coverage)
+
     log.info(s"Writing HTML coverage report to ${reportDir / "index.html" }")
     new ScoverageHtmlWriter(sourceDirs, reportDir, None).write(coverage)
+
+    log.info(s"Writing CSV coverage report to ${reportDir / "scoverage.csv" }")
+    writeCsv(reportDir / "scoverage.csv", new File("/Users/kjeschkies/Projects/marathon"), coverage)
+
     log.info(s"Statement coverage.: ${coverage.statementCoverageFormatted}%")
     log.info(s"Branch coverage...: ${coverage.branchCoverageFormatted}%")
     log.info(s"Coverage reports completed")

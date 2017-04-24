@@ -29,5 +29,6 @@ node("ammonite-0.8.2") {
   stage("Upload") {
     unstash(name: "test-coverage")
     sh """amm scripts/post_coverage_data.sc "http://postgrest.marathon.l4lb.thisdcos.directory/coverage_results" """
+    archiveArtifacts artifacts: 'target/test-coverage/**', allowEmptyArchive: true
   }
 }
