@@ -257,7 +257,7 @@ def test() {
   } finally {
     junit allowEmptyResults: true, testResults: 'target/test-reports/**/*.xml'
     publish_test_coverage("Test", "target/test-coverage")
-    stash(name: "test-coverage", include: "target/test-coverage/scoverage-report/*.csv")
+    stash(name: "test-coverage", include: "target/test-coverage/scoverage-report/scoverage.csv")
     if (is_phabricator_build()) {
       phabricator_convert_test_coverage("Test", "target/test-coverage/coverage-report/cobertura.xml")
     }
