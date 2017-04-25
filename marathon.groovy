@@ -90,7 +90,7 @@ def install_mesos() {
 
 // Kill stale processes left-over from old builds.
 def kill_junk() {
-  sh "/usr/local/bin/amm scripts/kill_stale_test_processes.sc || true"
+  sh "/usr/local/bin/amm scripts/kill_stale_test_processes.sc"
 }
 
 def clean_git() {
