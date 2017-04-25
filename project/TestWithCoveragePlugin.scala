@@ -47,15 +47,16 @@ object TestWithCoveragePlugin extends AutoPlugin {
    * Writes out a CSV with coverage data for each class.
    *
    * The header of the CSV is
-   * project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,branches_count,branches_invoked
+   * project_name,pipeline_name,build_id,build_timestamp,target_name,package_name,class_name,class_file_name,statements_count,statements_invoked,branches_count,branches_invoked
    *
    *
    * @param file CSV target
+   * @param name Target name, e.g. test-unit
    * @param baseDir Bas directory of project
    * @param coverage Coverage for build target.
    */
-  def writeCsv(file: File, baseDir: File, coverage: Coverage): Unit = {
-    val csvHeader = "project_name,pipeline_name,build_id,build_timestamp,package_name,class_name,class_file_name,statement_count,statements_invoked,branches_count,branches_invoked"
+  def writeCsv(file: File, name: String, baseDir: File, coverage: Coverage): Unit = {
+    val csvHeader = "project_name,pipeline_name,build_id,build_timestamp,target_name,package_name,class_name,class_file_name,statements_count,statements_invoked,branches_count,branches_invoked"
 
     val projectName = Properties.envOrElse("JOB_NAME", "no_project_name_defined")
     val pipelineName = Properties.envOrElse("BRANCH_NAME", "no_pipeline_name_defined")
@@ -63,7 +64,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
     val dateTimeFormatter = DateTimeFormatter.ofPattern("Y-MM-d_H:m:s")
     val buildTimestamp = ZonedDateTime.now(ZoneId.of("UTC")).format(dateTimeFormatter)
 
-    val buildDetails = s"$projectName, $pipelineName, $buildId, $buildTimestamp"
+    val buildDetails = s"$projectName, $pipelineName, $buildId, $buildTimestamp, $name"
     val csv: Seq[String] = csvHeader +: coverage.packages.view.flatMap { p =>
 
       p.classes.map { c =>
@@ -77,7 +78,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
     IO.write(file, csv.mkString("\n"))
   }
 
-  def writeCoverageReport(sourceDirs: Seq[File], coverage: Coverage, outputDir: File, baseDir: File, log: Logger): Unit = {
+  def writeCoverageReport(name: String, sourceDirs: Seq[File], coverage: Coverage, outputDir: File, baseDir: File, log: Logger): Unit = {
     log.info(s"Generating scoverage reports")
     outputDir.mkdirs()
     val coberturaDir = outputDir / "coverage-report"
@@ -95,7 +96,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
     new ScoverageHtmlWriter(sourceDirs, reportDir, None).write(coverage)
 
     log.info(s"Writing CSV coverage report to ${reportDir / "scoverage.csv" }")
-    writeCsv(reportDir / "scoverage.csv", baseDir, coverage)
+    writeCsv(reportDir / "scoverage.csv", name, baseDir, coverage)
 
     log.info(s"Statement coverage.: ${coverage.statementCoverageFormatted}%")
     log.info(s"Branch coverage...: ${coverage.branchCoverageFormatted}%")
@@ -125,7 +126,7 @@ object TestWithCoveragePlugin extends AutoPlugin {
   def runTestsWithCoverage(config: Configuration, target: File, baseDir: File, sourceDirs: Seq[File], outputDir: File, log: Logger, coverageMinimum: Double, failOnMinimum: Boolean): Def.Initialize[Task[Unit]] = Def.task {
     (test in config).andFinally {
       loadCoverage(target, log).foreach { coverage =>
-        writeCoverageReport(sourceDirs, coverage, outputDir, baseDir, log)
+        writeCoverageReport(config.name, sourceDirs, coverage, outputDir, baseDir, log)
         checkCoverage(coverage, log, coverageMinimum, failOnMinimum)
       }
     }.value
