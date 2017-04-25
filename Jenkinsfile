@@ -3,7 +3,7 @@
 def m
 
 ansiColor('gnome-terminal') {
-  node('JenkinsMarathonCI-Debian8-2017-04-24') {
+  node('JenkinsMarathonCI-Debian8-2017-04-25') {
     // fetch the file directly from SCM so the job can use it to checkout the rest of the pipeline.
     checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [[$class: 'SparseCheckoutPaths', sparseCheckoutPaths: [[path: 'marathon.groovy']]]], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'mesosphere-ci-github', url: 'git@github.com:mesosphere/marathon.git']]]
     m = load("marathon.groovy")

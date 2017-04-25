@@ -58,7 +58,13 @@ update-ca-certificates -f
 
 echo "{\"hosts\":{\"https://phabricator.mesosphere.com/api/\":{\"token\":\"$CONDUIT_TOKEN\"}}}" > /home/admin/.arcrc
 chown admin /home/admin/.arcrc
-curl -o /usr/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+chmod 0600 /home/admin/.arcrc
+
+# Install jq
+curl -L -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && sudo chmod +x /usr/local/bin/jq
+
+# Install Ammonite
+curl -L -o /usr/local/bin/amm https://github.com/lihaoyi/Ammonite/releases/download/0.8.2/2.12-0.8.2 && sudo chmod +x /usr/local/bin/amm
 
 # Warmup ivy2 cache
 git clone https://github.com/mesosphere/marathon.git /home/admin/marathon
