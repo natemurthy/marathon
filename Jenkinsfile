@@ -26,6 +26,8 @@ ansiColor('gnome-terminal') {
     m.build_marathon()
   }
 }
+// We run the post request on a different node because the AWS nodes do not
+// have access to the PostgREST endpoint.
 node("ammonite-0.8.2") {
   stage("Upload") {
     unstash(name: "Test-scoverage")
