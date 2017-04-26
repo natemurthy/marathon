@@ -56,6 +56,7 @@ def phabricator_test_results(status) {
 // When we finally have the publishHtml plugin, this will hopefully work.
 def publish_test_coverage(name, dir) {
   //publishHtml([allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true, reportDir: dir, reportFiles: 'index.html', reportName: "$name Coverage"])
+  stash(name: name, include: "target/test-coverage/scoverage-report/scoverage.csv")
   return this
 }
 
@@ -273,7 +274,6 @@ def test() {
   } finally {
     junit allowEmptyResults: true, testResults: 'target/test-reports/**/*.xml'
     publish_test_coverage("Test", "target/test-coverage")
-    stash(name: "test-coverage", include: "target/test-coverage/scoverage-report/scoverage.csv")
   }
 }
 
