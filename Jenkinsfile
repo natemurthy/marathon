@@ -27,7 +27,8 @@ ansiColor('gnome-terminal') {
   }
 }
 // We run the post request on a different node because the AWS nodes do not
-// have access to the PostgREST endpoint.
+// have access to the PostgREST endpoint. See QUALITY-1433 for request of a
+// public endpoint.
 node("ammonite-0.8.2") {
   stage("Upload") {
     unstash(name: "Test-scoverage")
