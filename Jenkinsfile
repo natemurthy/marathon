@@ -28,7 +28,7 @@ ansiColor('gnome-terminal') {
 }
 node("ammonite-0.8.2") {
   stage("Upload") {
-    unstash(name: "Test")
+    unstash(name: "Test-scoverage")
     sh """amm scripts/post_coverage_data.sc "http://postgrest.marathon.l4lb.thisdcos.directory/marathon_test_coverage" """
     archiveArtifacts artifacts: 'target/test-coverage/scoverage-report/scoverage.csv', allowEmptyArchive: true
   }
